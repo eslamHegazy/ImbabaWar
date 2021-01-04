@@ -1,0 +1,14 @@
+﻿  OpenGLMeshLoader.cpp
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\TextureBuilder.h(27,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\TextureBuilder.h(28,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(130,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(143,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(156,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(389,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(393,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(416,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(420,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\OpenGLMeshLoader.cpp(475,1): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message : see declaration of 'sprintf'
+Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  OpenGLMeshLoader.vcxproj -> C:\Users\DELL\Downloads\GUC-Surfers-master\GUC-Surfers-master\Debug\OpenGLMeshLoader.exe
