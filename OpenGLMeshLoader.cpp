@@ -580,6 +580,8 @@ void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'm':
 		PlayerForward += 0.5;
+		camera.eye.x += 0.5;
+		camera.center.x += 0.5;
 		break;
 	case 'w':
 		camera.moveY(d);
@@ -610,12 +612,12 @@ void Keyboard(unsigned char key, int x, int y) {
 
 	case 't':
 		score_pos = -48.5;
-		camera = Camera(-8.0f, 7.0f, lanes[player_lane], -1.0f, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
+		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 		break;
 
 	case 'f':
 		score_pos = -30;
-		camera = Camera(0.5f, 2.0f, lanes[player_lane], 1.0f, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
 		break;
 	case GLUT_KEY_ESCAPE:
 		exit(EXIT_SUCCESS);
