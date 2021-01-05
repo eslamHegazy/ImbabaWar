@@ -480,14 +480,14 @@ void myDisplay(void)
 
 	glPushMatrix();
 	glTranslated(groundTransform * 0.2, 0, 0);
-	glScaled(20, 1, 1);
+	//glScaled(20, 1, 1);
 	RenderSurface();
 	glPopMatrix();
 
 	// Draw Ground
 	glPushMatrix();
 	glTranslated(groundTransform, 0.5, 0);
-	glScaled(20.0f, 20.0f, 1.0f);
+	//glScaled(20.0f, 20.0f, 1.0f);
 	RenderGround();
 	glPopMatrix();
 
@@ -504,7 +504,7 @@ void myDisplay(void)
 
 	// bridge
 	glPushMatrix();
-	glTranslatef(400,0,0);
+	glTranslatef(20,0,0);
 	glScalef(0.001, 0.001, 0.001);
 	glRotatef(-90.f, 0, 1, 0);
 	model_bridge.Draw();
