@@ -459,16 +459,16 @@ void myDisplay(void)
 	glPushMatrix();
 	if (player_lane == 0)
 	{
-		glTranslatef(-10, score_pos, 10);
+		glTranslatef(-10+PlayerForward, score_pos, 10);
 	}
 	else if (player_lane == 1)
 	{
 
-		glTranslatef(-10, score_pos, 12);
+		glTranslatef(-10 + PlayerForward, score_pos, 12);
 
 	}
 	else {
-		glTranslatef(-10, score_pos, 14);
+		glTranslatef(-10 + PlayerForward, score_pos, 14);
 
 	}
 	glColor3f(0, 0, 0);	// Dim the ground texture a bit
