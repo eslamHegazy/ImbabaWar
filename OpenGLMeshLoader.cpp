@@ -48,7 +48,7 @@ double PlayerForward = 0;
 vector<Shape> obstacles;
 vector<Shape> coins;
 
-
+int idx = 0;
 struct Shape {
 	float x;
 	int lane;
@@ -57,6 +57,7 @@ struct Shape {
 		this->x = x, this->lane = lane;
 	};
 };
+vector<Shape> weo;
 
 int cameraZoom = 0;
 
@@ -360,11 +361,15 @@ void renderObstacle(float x, float lane)
 // adds an obstacle behind the skybox
 void addObstacle(int lane)
 {
-	obstacles.push_back(Shape(RESPAWN1_POSITION*obs, lane));
+	
+		weo.push_back(Shape(RESPAWN1_POSITION * obs, lane));
+		obstacles.push_back(Shape(RESPAWN1_POSITION * obs, lane));
+	
 }
 
 void addCoin(int lane)
 {
+	if(RESPAWN_POSITION*start<980)
 	coins.push_back(Shape(RESPAWN_POSITION*start, lane));
 }
 
@@ -482,7 +487,6 @@ void myDisplay(void)
 	RenderGround();
 	glPopMatrix();
 
-
 	// Draw Player
 	glPushMatrix();
 
@@ -511,6 +515,7 @@ void myDisplay(void)
 	// Draw all obstacles
 	for (unsigned i = 0; i < obstacles.size(); i++)
 	{
+		if(obstacles[i].x<980)
 		renderObstacle(obstacles[i].x, lanes[obstacles[i].lane]);
 	}
 
@@ -639,6 +644,8 @@ void Keyboard(unsigned char key, int x, int y) {
 			tex_wood.Load("Textures/marple.bmp");
 		}
 		printf("%f \n", PlayerForward);
+		printf("%d \n dest", destroyed);
+		
 		if (PlayerForward < 991.5 || PlayerForward>=1008) {
 			PlayerForward += 0.5;
 			camera.eye.x += 0.5;
@@ -657,11 +664,12 @@ void Keyboard(unsigned char key, int x, int y) {
 		camera.moveY(-d);
 		break;
 	case 'd':{
-
+		
+		printf("%d \n dest", destroyed);
 		int n = destroyed;
-		printf("%f \n", obstacles[n].x);
+		printf("%f \n", weo[n].x);
 
-		if (player_lane < 2 && !(player_lane + 1 == obstacles[n].lane&&PlayerForward+4>=obstacles[n].x)) 
+		if (player_lane < 2 && !(player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)) 
 			if (PlayerForward < 992) {
 					player_lane++;
 					camera.moveX(-x_truck_cam);
@@ -676,7 +684,7 @@ void Keyboard(unsigned char key, int x, int y) {
 		int n = destroyed;
 		printf("%f \n", obstacles[n].x);
 
-		if (player_lane > 0 && !(player_lane - 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x))
+		if (player_lane > 0 && !(player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x))
 			if (PlayerForward < 992) {
 				player_lane--;
 				camera.moveX(x_truck_cam);
@@ -743,13 +751,10 @@ void dropCoin(int v)
 }
 void dropObstacle(int v)
 {
-	boolean dropAllowed = random(0, 100) < 80;
 	obs++;
-	if (dropAllowed)
-	{
+	
 		int lane = random(0, 2);
 		addObstacle(lane);
-	}
 	glutTimerFunc(500, dropObstacle, 0);
 }
 
