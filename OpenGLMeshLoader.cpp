@@ -495,7 +495,7 @@ void myDisplay(void)
 
 	// bridge
 	glPushMatrix();
-	glTranslatef(20,0,0);
+	glTranslatef(1000,0,0);
 	glScalef(0.001, 0.001, 0.001);
 	glRotatef(-90.f, 0, 1, 0);
 	model_bridge.Draw();
@@ -632,9 +632,23 @@ void Keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
 	case 'm':
-		PlayerForward += 0.5;
-		camera.eye.x += 0.5;
-		camera.center.x += 0.5;
+    	if (PlayerForward == 1008.5) {
+			glutSwapBuffers();
+			tex_ground.Load("Textures/wood.bmp");
+			tex_surface.Load("Textures/ground0.bmp");
+			tex_wood.Load("Textures/marple.bmp");
+		}
+		printf("%f \n", PlayerForward);
+		if (PlayerForward < 991.5 || PlayerForward>=1008) {
+			PlayerForward += 0.5;
+			camera.eye.x += 0.5;
+			camera.center.x += 0.5;
+		}
+		else if (player_lane == 1) {
+			PlayerForward += 0.5;
+			camera.eye.x += 0.5;
+			camera.center.x += 0.5;
+		}
 		break;
 	case 'w':
 		camera.moveY(d);
@@ -647,8 +661,12 @@ void Keyboard(unsigned char key, int x, int y) {
 		int n = destroyed;
 		printf("%f \n", obstacles[n].x);
 
-		if (player_lane < 2 && !(player_lane + 1 == obstacles[n].lane&&PlayerForward+4>=obstacles[n].x))
-			{
+		if (player_lane < 2 && !(player_lane + 1 == obstacles[n].lane&&PlayerForward+4>=obstacles[n].x)) 
+			if (PlayerForward < 992) {
+					player_lane++;
+					camera.moveX(-x_truck_cam);
+			}
+			else if (PlayerForward >= 1008) {
 				player_lane++;
 				camera.moveX(-x_truck_cam);
 			}
@@ -658,16 +676,18 @@ void Keyboard(unsigned char key, int x, int y) {
 		int n = destroyed;
 		printf("%f \n", obstacles[n].x);
 
-		if (player_lane>0&& !(player_lane-1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x))
-		{
-			player_lane--;
-			camera.moveX(x_truck_cam);
-
-		}
-
-		
+		if (player_lane > 0 && !(player_lane - 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x))
+			if (PlayerForward < 992) {
+				player_lane--;
+				camera.moveX(x_truck_cam);
+			}
+			else if (PlayerForward >= 1008) {
+				player_lane--;
+				camera.moveX(x_truck_cam);
+			}
 		break;
-	}	case 'q':
+	}
+		case 'q':
 		camera.moveZ(d);
 		break;
 	case 'e':
