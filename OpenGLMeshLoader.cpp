@@ -27,11 +27,11 @@ int destroyed = 0;
 struct Shape;
 const int SKYBOX_BOUNDARY = 40;
 const float GAME_SPEED = 0.8;
-
+bool vis[100];
 int WIDTH = 1280;
 int HEIGHT = 720;
 GLuint tex;
-char title[] = "GUC Surfers";
+char title[] = "Imbaba War";
 
 float groundTransform = 0;
 
@@ -47,7 +47,7 @@ int stop = 1;
 double PlayerForward = 0;
 vector<Shape> obstacles;
 vector<Shape> coins;
-
+double trans = 0;
 int idx = 0;
 struct Shape {
 	float x;
@@ -82,6 +82,8 @@ void setupCamera() {
 // Model Variables
 Model_3DS model_house;
 Model_3DS model_car;
+Model_3DS model_bomb;
+
 Model_3DS coin_model;
 Model_3DS model_bridge;
 // Textures
@@ -282,7 +284,7 @@ void renderCoin(float x, float lane) {
 	glDisable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 	//Draw Coins
 	glPushMatrix();
-	glTranslatef(x + 5, 0.75 + 0.5, lane);
+	glTranslatef(x + 5,  1.5, lane);
 	glScalef(4.01, 4.01, 4.01);
 	glRotatef(coin_rotation_angle, 0, 1, 0);
 	coin_model.Draw();
@@ -292,70 +294,104 @@ void renderCoin(float x, float lane) {
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 
 }
-
-void renderObstacle(float x, float lane)
+int counter = 1;
+int tot[100];
+void shiftAll() {
+	if (counter<60) {
+		double total = 1.5 + counter * 25;
+		//total -= trans;
+		//printf("ta %f \n", trans);
+		//printf("ta %f \n", total);
+		tot[counter++]=total;
+	}
+}
+void renderObstacle(float x, float lane,int i)
 {
-	glDisable(GL_LIGHTING);	// Disable lighting 
+	if (x > 1000) {
+		
+		glDisable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	//Draw Coins
+		glPushMatrix();
+//		double total = 1.5 + counter * 10;
+	//	total -= trans;
+		//printf("ta %f \n", trans);
+		//printf("ta %f \n", total);
+		double z = tot[i] - trans>1.5?tot[i]-trans:1.5;
 
-	glColor3f(1, 1, 1);
+		glTranslatef(x, z, lane);
+		glScalef(4.01, 4.01, 4.01);
+		glRotatef(coin_rotation_angle, 0, 1, 0);
+		model_bomb.Draw();
+		
+		glPopMatrix();
+		//counter++;
+		glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+		glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
+		
+	}
+	else {
+		glDisable(GL_LIGHTING);	// Disable lighting 
 
-	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
+		glColor3f(1, 1, 1);
 
-	glBindTexture(GL_TEXTURE_2D, tex_wood.texture[0]);	// Bind the ground texture
+		glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 
-	glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, tex_wood.texture[0]);	// Bind the ground texture
 
-	glTranslated(x, 1.7, lane);
-	// Top Face
-	glPushMatrix();
-	glTranslated(0, 1, 0);
-	renderFace(Vector3f(0, 1, 0));
-	glPopMatrix();
+		glPushMatrix();
 
-	// Bottom Face
-	glPushMatrix();
-	glTranslated(0, -1, 0);
-	renderFace(Vector3f(0, -1, 0));
-	glPopMatrix();
+		glTranslated(x, 1.7, lane);
+		// Top Face
+		glPushMatrix();
+		glTranslated(0, 1, 0);
+		renderFace(Vector3f(0, 1, 0));
+		glPopMatrix();
 
-	// Left Face
-	glPushMatrix();
-	glRotated(90, 0, 0, 1);
-	glTranslated(0, 1, 0);
-	renderFace(Vector3f(1, 0, 0));
-	glPopMatrix();
+		// Bottom Face
+		glPushMatrix();
+		glTranslated(0, -1, 0);
+		renderFace(Vector3f(0, -1, 0));
+		glPopMatrix();
 
-	// Right Face
-	glPushMatrix();
-	glRotated(90, 0, 0, 1);
-	glTranslated(0, -1, 0);
-	renderFace(Vector3f(-1, 0, 0));
-	glPopMatrix();
+		// Left Face
+		glPushMatrix();
+		glRotated(90, 0, 0, 1);
+		glTranslated(0, 1, 0);
+		renderFace(Vector3f(1, 0, 0));
+		glPopMatrix();
 
-	// Front Face
-	glPushMatrix();
-	glRotated(90, 0, 0, 1);
-	glRotated(90, 1, 0, 0);
-	glTranslated(0, 1, 0);
-	renderFace(Vector3f(1, 0, 0));
-	glPopMatrix();
+		// Right Face
+		glPushMatrix();
+		glRotated(90, 0, 0, 1);
+		glTranslated(0, -1, 0);
+		renderFace(Vector3f(-1, 0, 0));
+		glPopMatrix();
 
-
-	// Back Face
-	glPushMatrix();
-	glRotated(90, 0, 0, 1);
-	glRotated(90, 1, 0, 0);
-	glTranslated(0, -1, 0);
-	renderFace(Vector3f(1, 0, 0));
-	glPopMatrix();
+		// Front Face
+		glPushMatrix();
+		glRotated(90, 0, 0, 1);
+		glRotated(90, 1, 0, 0);
+		glTranslated(0, 1, 0);
+		renderFace(Vector3f(1, 0, 0));
+		glPopMatrix();
 
 
+		// Back Face
+		glPushMatrix();
+		glRotated(90, 0, 0, 1);
+		glRotated(90, 1, 0, 0);
+		glTranslated(0, -1, 0);
+		renderFace(Vector3f(1, 0, 0));
+		glPopMatrix();
 
-	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
-	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 
-	glPopMatrix();
+		glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+
+		glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
+
+		glPopMatrix();
+	}
 }
 
 // adds an obstacle behind the skybox
@@ -369,7 +405,7 @@ void addObstacle(int lane)
 
 void addCoin(int lane)
 {
-	if(RESPAWN_POSITION*start<980)
+	if(RESPAWN_POSITION*start<980|| RESPAWN_POSITION * start>1110)
 	coins.push_back(Shape(RESPAWN_POSITION*start, lane));
 }
 
@@ -388,13 +424,29 @@ void destroyAtIndex(int index, vector<Shape> &shapes)
 void onObstacleCollision(int max)
 {
 	glFlush();
-	PlayerForward -= 0.5;
-	camera.eye.x -= 0.5;
-	camera.center.x -= 0.5;
-
-	//groundTransform = 0;
-	//score = 0;
-
+	if (PlayerForward > 1110) {
+		score = 0;
+		printf("%d obs: \n", obs);
+		//counter = 0;
+		trans=222.5*2;
+		
+		//obs = 19;
+		start = 10;
+		coins.clear();
+		//shiftAll();
+		while (PlayerForward > 1110) {
+			PlayerForward -= 0.5;
+			camera.eye.x -= 0.5;
+			camera.center.x -= 0.5;			
+		}
+		
+	}
+	if (PlayerForward<1008||PlayerForward>1110) {
+		PlayerForward -= 0.5;
+		camera.eye.x -= 0.5;
+		camera.center.x -= 0.5;
+	}
+	
 }
 
 void onCoinCollision(int i)
@@ -437,6 +489,8 @@ int random(int lower, int upper)
 //=======================================================================
 void myDisplay(void)
 {
+	shiftAll();
+
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -515,8 +569,8 @@ void myDisplay(void)
 	// Draw all obstacles
 	for (unsigned i = 0; i < obstacles.size(); i++)
 	{
-		if(obstacles[i].x<980)
-		renderObstacle(obstacles[i].x, lanes[obstacles[i].lane]);
+		if(obstacles[i].x<980||obstacles[i].x>1110&&i<=1000)
+		renderObstacle(obstacles[i].x, lanes[obstacles[i].lane], i);
 	}
 
 	//sky box4
@@ -551,6 +605,8 @@ void LoadAssets()
 	model_car.Load("Models/car/ausfb.3ds");
 	model_bridge.Load("Models/bridge/Bridge.3ds");
 	coin_model.Load("Models/coin/Coin Block2.3ds");
+	model_bomb.Load("Models/Obstacle/Bomb.3ds");
+
 	// Loading texture files
 	if (score <= 2) {
 		tex_ground.Load("Textures/ground.bmp");
@@ -575,8 +631,11 @@ void anime()
 
 		// If player collided with obstacle
 		if (obstacles[i].lane == player_lane &&
-			obstacles[i].x <=PlayerForward+4 && obstacles[i].x >= 0)
+			obstacles[i].x <=PlayerForward+4 && obstacles[i].x >=PlayerForward-3)
 		{
+			printf("kolayd was here %d \n ", obstacles[i].lane );
+			printf("kolayd was here %f \n ", obstacles[i].x);
+
 			onObstacleCollision(obstacles[i].x);
 		}
 		else if (obstacles[i].lane != player_lane &&
@@ -584,7 +643,7 @@ void anime()
 		
 			
 		}
-		if (obstacles[i].x <= PlayerForward - 3) {
+		if (obstacles[i].x <= PlayerForward - 3&&PlayerForward<1110) {
 			destroyAtIndex(i--, obstacles);
 			destroyed++;
 		}
@@ -601,11 +660,11 @@ void anime()
 
 		// If player collided with coin
 		if (coins[i].lane == player_lane &&
-			coins[i].x <= PlayerForward && coins[i].x >= 0)
+			coins[i].x <= PlayerForward && coins[i].x >= PlayerForward-7)
 		{
-			printf("%f \n", coins[i].x);
+			//printf("%f \n", coins[i].x);
 
-			printf("%f \n", PlayerForward);
+			//printf("%f \n", PlayerForward);
 
 			onCoinCollision(i);
 			destroyAtIndex(i--, coins);
@@ -644,17 +703,20 @@ void Keyboard(unsigned char key, int x, int y) {
 			tex_wood.Load("Textures/marple.bmp");
 		}
 		printf("%f \n", PlayerForward);
-		printf("%d \n dest", destroyed);
+		printf("%f  dest \n ",trans);
 		
-		if (PlayerForward < 991.5 || PlayerForward>=1008) {
+		if (PlayerForward < 991.5 || PlayerForward>=1008||(PlayerForward>=1008&&PlayerForward<1110)) {
 			PlayerForward += 0.5;
 			camera.eye.x += 0.5;
 			camera.center.x += 0.5;
+			trans+=0.2;
 		}
 		else if (player_lane == 1) {
 			PlayerForward += 0.5;
 			camera.eye.x += 0.5;
 			camera.center.x += 0.5;
+			trans+=0.2;
+
 		}
 		break;
 	case 'w':
@@ -665,11 +727,11 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'd':{
 		
-		printf("%d \n dest", destroyed);
+		//printf("%d \n dest", destroyed);
 		int n = destroyed;
-		printf("%f \n", weo[n].x);
+		//printf("%f \n", weo[n].x);
 
-		if (player_lane < 2 && !(player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)) 
+		if (player_lane < 2 && !(player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)||(player_lane > 0 && PlayerForward>1008&&PlayerForward<1110)||(player_lane > 0 && PlayerForward>1110))
 			if (PlayerForward < 992) {
 					player_lane++;
 					camera.moveX(-x_truck_cam);
@@ -682,9 +744,9 @@ void Keyboard(unsigned char key, int x, int y) {
 		}
 	case 'a': {
 		int n = destroyed;
-		printf("%f \n", obstacles[n].x);
+	//	printf("%f \n", obstacles[n].x);
 
-		if (player_lane > 0 && !(player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x))
+		if (player_lane > 0 && !(player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110))
 			if (PlayerForward < 992) {
 				player_lane--;
 				camera.moveX(x_truck_cam);
@@ -740,7 +802,7 @@ void Special(int key, int x, int y) {
 }
 void dropCoin(int v)
 {
-	boolean dropAllowed = random(0, 100) < 80;
+	boolean dropAllowed = random(0, 100) < 100;
 	start++;
 	if (dropAllowed)
 	{
@@ -755,7 +817,7 @@ void dropObstacle(int v)
 	
 		int lane = random(0, 2);
 		addObstacle(lane);
-	glutTimerFunc(500, dropObstacle, 0);
+	glutTimerFunc(1, dropObstacle, 0);
 }
 
 //=======================================================================
@@ -777,11 +839,9 @@ void main(int argc, char** argv)
 	glutDisplayFunc(myDisplay);
 
 	glutIdleFunc(anime);
-
 	glutTimerFunc(0, dropObstacle, 0);
 	glutTimerFunc(0, dropCoin, 0);
 //	glutTimerFunc(0, lightAnim, 0);
-
 
 	glutKeyboardFunc(Keyboard);
 
