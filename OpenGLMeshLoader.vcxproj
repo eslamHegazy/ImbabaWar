@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2EE1F2C2-040C-46D8-8332-127B746115A6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>OpenGL3DTemplate</RootNamespace>
-    <ProjectName>OpenGLMeshLoader</ProjectName>
+    <RootNamespace>ImbabaWar</RootNamespace>
+    <ProjectName>ImbabaWar</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -87,7 +87,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="Model_3DS.cpp" />
-    <ClCompile Include="OpenGLMeshLoader.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Vector3f.cpp" />
   </ItemGroup>
   <ItemGroup>
