@@ -44,7 +44,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 900;
+double PlayerForward = 0;
 vector<Shape> obstacles;
 vector<Shape> coins;
 double trans = 0;
