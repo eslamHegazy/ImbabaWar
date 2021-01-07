@@ -35,7 +35,7 @@ char title[] = "Imbaba War";
 
 float groundTransform = 0;
 
-int coin_rotation_angle;
+double coin_rotation_angle;
 bool l0,l1,l2;
 int light = 0;
 int player_lane = 1;
@@ -44,17 +44,19 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 0;
+double PlayerForward = 900;
 vector<Shape> obstacles;
 vector<Shape> coins;
 double trans = 0;
 int idx = 0;
 struct Shape {
-	float x;
+	double x;
+	double y;
 	int lane;
 
-	Shape(float x, int lane) {
-		this->x = x, this->lane = lane;
+	Shape(double x, int lane,double y) {
+		this->x = x, this->lane = lane, this->y = y;
+
 	};
 };
 vector<Shape> weo;
@@ -88,6 +90,7 @@ Model_3DS coin_model;
 Model_3DS model_bridge;
 // Textures
 GLTexture tex_ground;
+GLTexture tex_bridge;
 
 GLTexture tex_surface;
 GLTexture tex_wood;
@@ -229,6 +232,34 @@ void RenderGround()
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
+void RenderBridge()
+{
+	glDisable(GL_LIGHTING);	// Disable lighting 
+
+	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
+
+	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
+
+	glBindTexture(GL_TEXTURE_2D, tex_bridge.texture[0]);	// Bind the ground texture
+
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	glNormal3f(0, 0.5, 0);	// Set quad normal direction.
+	glTexCoord2f(1, 0);
+	glVertex3f(992, 0.5, -3);
+	glTexCoord2f(1, 1);
+	glVertex3f(1010, 0.5, -3);
+	glTexCoord2f(0, 1);
+	glVertex3f(1010, 0.5, 3);
+	glTexCoord2f(0, 0);		
+	glVertex3f(992, 0.5, 3);
+	glEnd();
+	glPopMatrix();
+
+	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+
+	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
+}
 
 void RenderSurface()
 {
@@ -305,7 +336,7 @@ void shiftAll() {
 		tot[counter++]=total;
 	}
 }
-void renderObstacle(float x, float lane,int i)
+void renderObstacle(float x, float lane,int i,float y)
 {
 	if (x > 1000) {
 		
@@ -316,9 +347,8 @@ void renderObstacle(float x, float lane,int i)
 	//	total -= trans;
 		//printf("ta %f \n", trans);
 		//printf("ta %f \n", total);
-		double z = tot[i] - trans>1.5?tot[i]-trans:1.5;
 
-		glTranslatef(x, z, lane);
+		glTranslatef(x, y, lane);
 		glScalef(4.01, 4.01, 4.01);
 		glRotatef(coin_rotation_angle, 0, 1, 0);
 		model_bomb.Draw();
@@ -398,15 +428,15 @@ void renderObstacle(float x, float lane,int i)
 void addObstacle(int lane)
 {
 	
-		weo.push_back(Shape(RESPAWN1_POSITION * obs, lane));
-		obstacles.push_back(Shape(RESPAWN1_POSITION * obs, lane));
+		weo.push_back(Shape(PlayerForward+50, lane,PlayerForward>=1008.5?20:0));
+		obstacles.push_back(Shape(PlayerForward+50, lane, PlayerForward >= 1008.5 ? 20 : 0));
 	
 }
 
 void addCoin(int lane)
 {
 	if(RESPAWN_POSITION*start<980|| RESPAWN_POSITION * start>1110)
-	coins.push_back(Shape(RESPAWN_POSITION*start, lane));
+	coins.push_back(Shape(RESPAWN_POSITION*start, lane,0));
 }
 
 
@@ -433,6 +463,9 @@ void onObstacleCollision(int max)
 		//obs = 19;
 		start = 10;
 		coins.clear();
+		obstacles.clear();
+		weo.clear();
+		destroyed = 0;
 		//shiftAll();
 		while (PlayerForward > 1110) {
 			PlayerForward -= 0.5;
@@ -553,11 +586,13 @@ void myDisplay(void)
 
 	// bridge
 	glPushMatrix();
-	glTranslatef(1000,0,0);
+	glTranslatef(1000,0.1,0);
 	glScalef(0.001, 0.001, 0.001);
 	glRotatef(-90.f, 0, 1, 0);
 	model_bridge.Draw();
 	glPopMatrix();
+
+	RenderBridge();
 
 	//Draw all Coins
 	for (unsigned i = 0; i < coins.size(); i++)
@@ -570,7 +605,7 @@ void myDisplay(void)
 	for (unsigned i = 0; i < obstacles.size(); i++)
 	{
 		if(obstacles[i].x<980||obstacles[i].x>1110&&i<=1000)
-		renderObstacle(obstacles[i].x, lanes[obstacles[i].lane], i);
+		renderObstacle(obstacles[i].x, lanes[obstacles[i].lane], i,obstacles[i].y);
 	}
 
 	//sky box4
@@ -612,6 +647,7 @@ void LoadAssets()
 		tex_ground.Load("Textures/ground.bmp");
 	}
 	tex_surface.Load("Textures/surface.bmp");
+	tex_bridge.Load("Textures/sea.bmp");
 
 	tex_wood.Load("Textures/wall.bmp");
 
@@ -624,12 +660,15 @@ void LoadAssets()
 //=======================================================================
 void anime()
 {
-	coin_rotation_angle += 5 * stop;
+	coin_rotation_angle += 0.5 * stop;
 	for (int i = 0; i < obstacles.size(); i++)
 	{
 		//obstacles[i].x -= GAME_SPEED * stop;
 
 		// If player collided with obstacle
+		if (obstacles[i].y >= 1.05) {
+			obstacles[i].y -= 0.05;
+		}
 		if (obstacles[i].lane == player_lane &&
 			obstacles[i].x <=PlayerForward+4 && obstacles[i].x >=PlayerForward-3)
 		{
@@ -637,6 +676,7 @@ void anime()
 			printf("kolayd was here %f \n ", obstacles[i].x);
 
 			onObstacleCollision(obstacles[i].x);
+			break;
 		}
 		else if (obstacles[i].lane != player_lane &&
 			obstacles[i].x <= PlayerForward + 4 && obstacles[i].x >= 0) {
@@ -647,6 +687,7 @@ void anime()
 			destroyAtIndex(i--, obstacles);
 			destroyed++;
 		}
+		
 
 
 		// If the obstacle is way behind the player
@@ -680,7 +721,7 @@ void anime()
 
 	//groundTransform -= GAME_SPEED * stop;
 
-	for (int i = 0; i < 1e7; i++);
+	//for (int i = 0; i < 1e7; i++);
 	glutPostRedisplay();
 }
 
@@ -701,6 +742,7 @@ void Keyboard(unsigned char key, int x, int y) {
 			tex_ground.Load("Textures/wood.bmp");
 			tex_surface.Load("Textures/ground0.bmp");
 			tex_wood.Load("Textures/marple.bmp");
+			loadBMP(&tex, "Textures/night2.bmp", true);
 		}
 		printf("%f \n", PlayerForward);
 		printf("%f  dest \n ",trans);
@@ -730,8 +772,7 @@ void Keyboard(unsigned char key, int x, int y) {
 		//printf("%d \n dest", destroyed);
 		int n = destroyed;
 		//printf("%f \n", weo[n].x);
-
-		if (player_lane < 2 && !(player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)||(player_lane > 0 && PlayerForward>1008&&PlayerForward<1110)||(player_lane > 0 && PlayerForward>1110))
+		if (player_lane < 2 && !(n < weo.size() && player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)||(player_lane > 0 && PlayerForward>1008&&PlayerForward<1110)||(player_lane > 0 && PlayerForward>1110))
 			if (PlayerForward < 992) {
 					player_lane++;
 					camera.moveX(-x_truck_cam);
@@ -745,8 +786,7 @@ void Keyboard(unsigned char key, int x, int y) {
 	case 'a': {
 		int n = destroyed;
 	//	printf("%f \n", obstacles[n].x);
-
-		if (player_lane > 0 && !(player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110))
+		if (player_lane > 0 && !(n<weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110))
 			if (PlayerForward < 992) {
 				player_lane--;
 				camera.moveX(x_truck_cam);
@@ -811,13 +851,15 @@ void dropCoin(int v)
 	}
 	glutTimerFunc(500, dropCoin, 0);
 }
+
+
 void dropObstacle(int v)
 {
 	obs++;
 	
-		int lane = random(0, 2);
-		addObstacle(lane);
-	glutTimerFunc(1, dropObstacle, 0);
+	int lane = random(0, 2);
+	addObstacle(lane);
+	glutTimerFunc(7000, dropObstacle, 0);
 }
 
 //=======================================================================

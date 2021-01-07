@@ -1,13 +1,14 @@
 ﻿  OpenGLMeshLoader.cpp
-D:\Graphics\Projy\ImbabaWar\TextureBuilder.h(27,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-D:\Graphics\Projy\ImbabaWar\TextureBuilder.h(28,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(138,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(151,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(164,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(525,1): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message : see declaration of 'sprintf'
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(628,20): warning C4018: '<': signed/unsigned mismatch
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(657,20): warning C4018: '<': signed/unsigned mismatch
-D:\Graphics\Projy\ImbabaWar\OpenGLMeshLoader.cpp(674,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\TextureBuilder.h(27,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+E:\ImbabaWar\TextureBuilder.h(28,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+E:\ImbabaWar\OpenGLMeshLoader.cpp(141,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(154,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(167,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(558,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\ImbabaWar\OpenGLMeshLoader.cpp(664,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(698,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(715,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(775,30): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(789,29): warning C4018: '<': signed/unsigned mismatch
 Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
-  OpenGLMeshLoader.vcxproj -> D:\Graphics\Projy\ImbabaWar\Debug\OpenGLMeshLoader.exe
+  OpenGLMeshLoader.vcxproj -> E:\ImbabaWar\Debug\OpenGLMeshLoader.exe
