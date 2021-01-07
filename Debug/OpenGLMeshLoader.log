@@ -1,14 +1,14 @@
 ﻿  OpenGLMeshLoader.cpp
 E:\ImbabaWar\TextureBuilder.h(27,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
 E:\ImbabaWar\TextureBuilder.h(28,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-E:\ImbabaWar\OpenGLMeshLoader.cpp(141,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-E:\ImbabaWar\OpenGLMeshLoader.cpp(154,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-E:\ImbabaWar\OpenGLMeshLoader.cpp(167,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
-E:\ImbabaWar\OpenGLMeshLoader.cpp(558,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\ImbabaWar\OpenGLMeshLoader.cpp(664,20): warning C4018: '<': signed/unsigned mismatch
-E:\ImbabaWar\OpenGLMeshLoader.cpp(698,20): warning C4018: '<': signed/unsigned mismatch
-E:\ImbabaWar\OpenGLMeshLoader.cpp(715,20): warning C4018: '<': signed/unsigned mismatch
-E:\ImbabaWar\OpenGLMeshLoader.cpp(775,30): warning C4018: '<': signed/unsigned mismatch
-E:\ImbabaWar\OpenGLMeshLoader.cpp(789,29): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(142,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(155,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(168,46): warning C4838: conversion from 'bool' to 'GLfloat' requires a narrowing conversion
+E:\ImbabaWar\OpenGLMeshLoader.cpp(559,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\ImbabaWar\OpenGLMeshLoader.cpp(669,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(703,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(720,20): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(790,30): warning C4018: '<': signed/unsigned mismatch
+E:\ImbabaWar\OpenGLMeshLoader.cpp(804,29): warning C4018: '<': signed/unsigned mismatch
 Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   OpenGLMeshLoader.vcxproj -> E:\ImbabaWar\Debug\OpenGLMeshLoader.exe

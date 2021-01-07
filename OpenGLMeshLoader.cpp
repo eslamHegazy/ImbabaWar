@@ -45,6 +45,7 @@ int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
 double PlayerForward = 0;
+bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
 double trans = 0;
@@ -244,15 +245,15 @@ void RenderBridge()
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	glNormal3f(0, 0.5, 0);	// Set quad normal direction.
+	glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(1, 0);
-	glVertex3f(992, 0.5, -3);
+	glVertex3f(993, 0.55, -3);
 	glTexCoord2f(1, 1);
-	glVertex3f(1010, 0.5, -3);
+	glVertex3f(1009, 0.55, -3);
 	glTexCoord2f(0, 1);
-	glVertex3f(1010, 0.5, 3);
+	glVertex3f(1009, 0.55, 3);
 	glTexCoord2f(0, 0);		
-	glVertex3f(992, 0.5, 3);
+	glVertex3f(993, 0.55, 3);
 	glEnd();
 	glPopMatrix();
 
@@ -577,7 +578,7 @@ void myDisplay(void)
 	// Draw Player
 	glPushMatrix();
 
-	glTranslatef(PlayerForward, 0.5, lanes[player_lane]);
+	glTranslatef(PlayerForward,PlayerForward>=993 && PlayerForward<=1009?0.8:0.5, lanes[player_lane]);
 	glScalef(0.5, 0.5, 0.5);
 	glRotatef(-90.f, 0, 1, 0);
 	model_car.Draw();
@@ -586,13 +587,17 @@ void myDisplay(void)
 
 	// bridge
 	glPushMatrix();
-	glTranslatef(1000,0.1,0);
+	glTranslatef(1000,0.4,0);
 	glScalef(0.001, 0.001, 0.001);
 	glRotatef(-90.f, 0, 1, 0);
 	model_bridge.Draw();
 	glPopMatrix();
 
+	glPushMatrix();
+	glTranslated(groundTransform, 0.3, 0);
+	//glScaled(20.0f, 20.0f, 1.0f);
 	RenderBridge();
+	glPopMatrix();
 
 	//Draw all Coins
 	for (unsigned i = 0; i < coins.size(); i++)
@@ -737,7 +742,7 @@ void Keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
 	case 'm':
-    	if (PlayerForward == 1008.5) {
+    	if (PlayerForward == 1009) {
 			glutSwapBuffers();
 			tex_ground.Load("Textures/wood.bmp");
 			tex_surface.Load("Textures/ground0.bmp");
@@ -759,6 +764,16 @@ void Keyboard(unsigned char key, int x, int y) {
 			camera.center.x += 0.5;
 			trans+=0.2;
 
+		}
+		if (PlayerForward >= 993 && PlayerForward <= 1009) {
+			if (firstCam) {
+				camera = Camera(0.5f + PlayerForward, 2.3f, lanes[player_lane], 1.0f + PlayerForward, 2.3f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+
+			}
+			else {
+				camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
+
+			}
 		}
 		break;
 	case 'w':
@@ -805,13 +820,20 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 't':
+		firstCam = false;
 		score_pos = -48.5;
 		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 		break;
 
 	case 'f':
+		firstCam = true;
 		score_pos = -30;
-		camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		if (PlayerForward >= 993 && PlayerForward <= 1009) {
+			camera = Camera(0.5f + PlayerForward, 2.3f, lanes[player_lane], 1.0f + PlayerForward, 2.3f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		}
+		else {
+			camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		}
 		break;
 	case GLUT_KEY_ESCAPE:
 		exit(EXIT_SUCCESS);
