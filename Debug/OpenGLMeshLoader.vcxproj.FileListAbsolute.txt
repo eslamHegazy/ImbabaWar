@@ -1,2 +1,0 @@
-E:\ImbabaWar\Debug\OpenGLMeshLoader.exe
-E:\ImbabaWar\Debug\OpenGLMeshLoader.pdb
