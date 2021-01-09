@@ -44,7 +44,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 0;
+double PlayerForward = 900;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -246,14 +246,14 @@ void RenderBridge()
 	glPushMatrix();
 	glBegin(GL_QUADS);
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
-	glTexCoord2f(1, 0);
-	glVertex3f(993, 0.55, -3);
-	glTexCoord2f(1, 1);
-	glVertex3f(1009, 0.55, -3);
+	glTexCoord2f(100, 0);
+	glVertex3f(993, 0.55, -200);
+	glTexCoord2f(100, 1);
+	glVertex3f(1009, 0.55, -200);
 	glTexCoord2f(0, 1);
-	glVertex3f(1009, 0.55, 3);
+	glVertex3f(1009, 0.55, 200);
 	glTexCoord2f(0, 0);		
-	glVertex3f(993, 0.55, 3);
+	glVertex3f(993, 0.55, 200);
 	glEnd();
 	glPopMatrix();
 
