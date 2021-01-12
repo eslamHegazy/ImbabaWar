@@ -8,6 +8,7 @@
 #include "Vector3f.h"
 #include "Camera.h" 
 #include <time.h>       
+#include <dsound.h>
 
 #define GLUT_KEY_ESCAPE 27
 #define LEFT_LANE -2
@@ -16,6 +17,9 @@
 #define GROUND_LENGTH 10000
 #define RESPAWN_POSITION 100
 #define RESPAWN1_POSITION 61
+
+#define HALF_NOTE 1.059463094359 // HALF_NOTE ^ 12 = 2
+#define PI 3.14159265358979
 
 using namespace std;
 
@@ -112,6 +116,182 @@ void print(int x, int y, char *string)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
 	}
 }
+
+//class for sound
+class SoundEffect
+{
+public:
+	SoundEffect()
+	{
+		m_data = NULL;
+	}
+	SoundEffect(const int noteInfo[], const int arraySize)
+	{
+		// Initialize the sound format we will request from sound card
+		m_waveFormat.wFormatTag = WAVE_FORMAT_PCM;     // Uncompressed sound format
+		m_waveFormat.nChannels = 1;                    // 1 = Mono, 2 = Stereo
+		m_waveFormat.wBitsPerSample = 8;               // Bits per sample per channel
+		m_waveFormat.nSamplesPerSec = 11025;           // Sample Per Second
+		m_waveFormat.nBlockAlign = m_waveFormat.nChannels * m_waveFormat.wBitsPerSample / 8;
+		m_waveFormat.nAvgBytesPerSec = m_waveFormat.nSamplesPerSec * m_waveFormat.nBlockAlign;
+		m_waveFormat.cbSize = 0;
+
+		int dataLength = 0, moment = (m_waveFormat.nSamplesPerSec / 75);
+		double period = 2.0 * PI / (double)m_waveFormat.nSamplesPerSec;
+
+		// Calculate how long we need the sound buffer to be
+		for (int i = 1; i < arraySize; i += 2)
+			dataLength += (noteInfo[i] != 0) ? noteInfo[i] * moment : moment;
+
+		// Allocate the array
+		m_data = new char[m_bufferSize = dataLength];
+
+		int placeInData = 0;
+
+		// Make the sound buffer
+		for (int i = 0; i < arraySize; i += 2)
+		{
+			int relativePlaceInData = placeInData;
+
+			while ((relativePlaceInData - placeInData) < ((noteInfo[i + 1] != 0) ? noteInfo[i + 1] * moment : moment))
+			{
+				// Generate the sound wave (as a sinusoid)
+				// - x will have a range of -1 to +1
+				double x = sin((relativePlaceInData - placeInData) * 55 * pow(HALF_NOTE, noteInfo[i]) * period);
+
+				// Scale x to a range of 0-255 (signed char) for 8 bit sound reproduction
+				m_data[relativePlaceInData] = (char)(127 * x + 128);
+
+				relativePlaceInData++;
+			}
+
+			placeInData = relativePlaceInData;
+		}
+	}
+	SoundEffect(SoundEffect& otherInstance)
+	{
+		m_bufferSize = otherInstance.m_bufferSize;
+		m_waveFormat = otherInstance.m_waveFormat;
+
+		if (m_bufferSize > 0)
+		{
+			m_data = new char[m_bufferSize];
+
+			for (int i = 0; i < otherInstance.m_bufferSize; i++)
+				m_data[i] = otherInstance.m_data[i];
+		}
+	}
+	~SoundEffect()
+	{
+		if (m_bufferSize > 0)
+			delete[] m_data;
+	}
+
+	SoundEffect& operator=(SoundEffect& otherInstance)
+	{
+		if (m_bufferSize > 0)
+			delete[] m_data;
+
+		m_bufferSize = otherInstance.m_bufferSize;
+		m_waveFormat = otherInstance.m_waveFormat;
+
+		if (m_bufferSize > 0)
+		{
+			m_data = new char[m_bufferSize];
+
+			for (int i = 0; i < otherInstance.m_bufferSize; i++)
+				m_data[i] = otherInstance.m_data[i];
+		}
+
+		return *this;
+	}
+
+	void Play()
+	{
+		// Create our "Sound is Done" event
+		m_done = CreateEvent(0, FALSE, FALSE, 0);
+
+		// Open the audio device
+		if (waveOutOpen(&m_waveOut, 0, &m_waveFormat, (DWORD)m_done, 0, CALLBACK_EVENT) != MMSYSERR_NOERROR)
+		{
+			cout << "Sound card cannot be opened." << endl;
+			return;
+		}
+
+		// Create the wave header for our sound buffer
+		m_waveHeader.lpData = m_data;
+		m_waveHeader.dwBufferLength = m_bufferSize;
+		m_waveHeader.dwFlags = 0;
+		m_waveHeader.dwLoops = 0;
+
+		// Prepare the header for playback on sound card
+		if (waveOutPrepareHeader(m_waveOut, &m_waveHeader, sizeof(m_waveHeader)) != MMSYSERR_NOERROR)
+		{
+			cout << "Error preparing Header!" << endl;
+			return;
+		}
+
+		// Play the sound!
+		ResetEvent(m_done); // Reset our Event so it is non-signaled, it will be signaled again with buffer finished
+
+		if (waveOutWrite(m_waveOut, &m_waveHeader, sizeof(m_waveHeader)) != MMSYSERR_NOERROR)
+		{
+			cout << "Error writing to sound card!" << endl;
+			return;
+		}
+
+		// Wait until sound finishes playing
+		if (WaitForSingleObject(m_done, INFINITE) != WAIT_OBJECT_0)
+		{
+			cout << "Error waiting for sound to finish" << endl;
+			return;
+		}
+
+		// Unprepare our wav header
+		if (waveOutUnprepareHeader(m_waveOut, &m_waveHeader, sizeof(m_waveHeader)) != MMSYSERR_NOERROR)
+		{
+			cout << "Error unpreparing header!" << endl;
+			return;
+		}
+
+		// Close the wav device
+		if (waveOutClose(m_waveOut) != MMSYSERR_NOERROR)
+		{
+			cout << "Sound card cannot be closed!" << endl;
+			return;
+		}
+
+		// Release our event handle
+		CloseHandle(m_done);
+	}
+
+private:
+	HWAVEOUT m_waveOut; // Handle to sound card output
+	WAVEFORMATEX m_waveFormat; // The sound format
+	WAVEHDR m_waveHeader; // WAVE header for our sound data
+	HANDLE m_done; // Event Handle that tells us the sound has finished being played.
+				   // This is a very efficient way to put the program to sleep
+				   // while the sound card is processing the sound buffer
+
+	char* m_data; // Sound data buffer
+	int m_bufferSize; // Size of sound data buffer
+};
+const int gameFinishedarr[] = { 37 ,4 ,41 ,4 ,44 ,4 ,49 ,4 ,53 ,4 ,56, 4 ,61 ,4 ,65 ,4 ,68 ,4 ,73, 4 };
+SoundEffect gameFinish(gameFinishedarr, 20);
+
+const int bridgeOpenarr[] = { 56 ,8 ,61 ,8 ,65 ,8 ,61 ,8 ,63 ,8 ,68 ,8 };
+SoundEffect bridgeOpen(bridgeOpenarr, 12);
+
+const int speedPowerUparr[] = { 37 ,4 ,44 ,4 ,49 ,4 ,38 ,4 ,45 ,4 ,50 ,4 ,39 ,4 ,46 ,4 ,51 ,4 };
+SoundEffect speedPowerUp(speedPowerUparr, 18);
+
+const int coinarr[] = { 66 ,1 };
+SoundEffect coin(coinarr, 2);
+
+const int gameLostarr[] = { 25 ,3 ,13 ,4, 1, 6 };
+SoundEffect gameLost(gameLostarr, 6);
+
+
 
 //=======================================================================
 // Lighting Configuration Function
@@ -428,16 +608,19 @@ void renderObstacle(float x, float lane,int i,float y)
 // adds an obstacle behind the skybox
 void addObstacle(int lane)
 {
-	
-		weo.push_back(Shape(PlayerForward+50, lane,PlayerForward>=1008.5?20:0));
-		obstacles.push_back(Shape(PlayerForward+50, lane, PlayerForward >= 1008.5 ? 20 : 0));
-	
+	if (PlayerForward < 980 || PlayerForward>1110) {
+		obs++;
+		weo.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
+		obstacles.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
+	}
 }
 
 void addCoin(int lane)
 {
-	if(RESPAWN_POSITION*start<980|| RESPAWN_POSITION * start>1110)
-	coins.push_back(Shape(RESPAWN_POSITION*start, lane,0));
+	start++;
+	if (RESPAWN_POSITION * start < 980 || RESPAWN_POSITION * start>1110) {
+		coins.push_back(Shape(RESPAWN_POSITION * start, lane, 0));
+	}
 }
 
 
@@ -456,6 +639,7 @@ void onObstacleCollision(int max)
 {
 	glFlush();
 	if (PlayerForward > 1110) {
+		gameLost.Play();
 		score = 0;
 		printf("%d obs: \n", obs);
 		//counter = 0;
@@ -479,12 +663,14 @@ void onObstacleCollision(int max)
 		PlayerForward -= 0.5;
 		camera.eye.x -= 0.5;
 		camera.center.x -= 0.5;
+		bridgeOpen.Play();
 	}
 	
 }
 
 void onCoinCollision(int i)
 {
+	coin.Play();
 	glFlush();
 	glutSwapBuffers();
 	printf("%d", score);
@@ -742,17 +928,12 @@ void Keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
 	case 'm':
-    	if (PlayerForward == 1009) {
-			glutSwapBuffers();
-			tex_ground.Load("Textures/wood.bmp");
-			tex_surface.Load("Textures/ground0.bmp");
-			tex_wood.Load("Textures/marple.bmp");
-			loadBMP(&tex, "Textures/night2.bmp", true);
-		}
+		
 		printf("%f \n", PlayerForward);
 		printf("%f  dest \n ",trans);
 		
 		if (PlayerForward < 991.5 || PlayerForward>=1008||(PlayerForward>=1008&&PlayerForward<1110)) {
+			Beep(623, 2);
 			PlayerForward += 0.5;
 			camera.eye.x += 0.5;
 			camera.center.x += 0.5;
@@ -764,6 +945,18 @@ void Keyboard(unsigned char key, int x, int y) {
 			camera.center.x += 0.5;
 			trans+=0.2;
 
+		}
+		else {
+			bridgeOpen.Play();
+		}
+    	if (PlayerForward == 1009) {
+			camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
+			gameFinish.Play();
+			glutSwapBuffers();
+			tex_ground.Load("Textures/wood.bmp");
+			tex_surface.Load("Textures/ground0.bmp");
+			tex_wood.Load("Textures/marple.bmp");
+			loadBMP(&tex, "Textures/night2.bmp", true);
 		}
 		if (PlayerForward >= 993 && PlayerForward <= 1009) {
 			if (firstCam) {
@@ -787,29 +980,48 @@ void Keyboard(unsigned char key, int x, int y) {
 		//printf("%d \n dest", destroyed);
 		int n = destroyed;
 		//printf("%f \n", weo[n].x);
-		if (player_lane < 2 && !(n < weo.size() && player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)||(player_lane > 0 && PlayerForward>1008&&PlayerForward<1110)||(player_lane > 0 && PlayerForward>1110))
+		if (player_lane < 2 && !(n < weo.size() && player_lane + 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || (player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110)) {
 			if (PlayerForward < 992) {
-					player_lane++;
-					camera.moveX(-x_truck_cam);
+				player_lane++;
+				speedPowerUp.Play();
+				camera.moveX(-x_truck_cam);
 			}
 			else if (PlayerForward >= 1008) {
 				player_lane++;
+				speedPowerUp.Play();
 				camera.moveX(-x_truck_cam);
 			}
+			else {
+				bridgeOpen.Play();
+			}
+		}
+		else {
+			bridgeOpen.Play();
+		}
 			break;
 		}
 	case 'a': {
+		
 		int n = destroyed;
 	//	printf("%f \n", obstacles[n].x);
-		if (player_lane > 0 && !(n<weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110))
+		if (player_lane > 0 && !(n < weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || (player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110)) {
 			if (PlayerForward < 992) {
 				player_lane--;
+				speedPowerUp.Play();
 				camera.moveX(x_truck_cam);
 			}
 			else if (PlayerForward >= 1008) {
 				player_lane--;
+				speedPowerUp.Play();
 				camera.moveX(x_truck_cam);
 			}
+			else {
+				bridgeOpen.Play();
+			}
+		}
+		else {
+			bridgeOpen.Play();
+		}
 		break;
 	}
 		case 'q':
@@ -820,12 +1032,16 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 't':
+		PlaySound(NULL, 0, SND_ASYNC);
+		PlaySound(TEXT("camera.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		firstCam = false;
 		score_pos = -48.5;
 		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 		break;
 
 	case 'f':
+		PlaySound(NULL, 0, SND_ASYNC);
+		PlaySound(TEXT("camera.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		firstCam = true;
 		score_pos = -30;
 		if (PlayerForward >= 993 && PlayerForward <= 1009) {
@@ -865,23 +1081,34 @@ void Special(int key, int x, int y) {
 void dropCoin(int v)
 {
 	boolean dropAllowed = random(0, 100) < 100;
-	start++;
+	
 	if (dropAllowed)
 	{
 		int lane = random(0, 2);
 		addCoin(lane);
 	}
-	glutTimerFunc(500, dropCoin, 0);
+	glutTimerFunc(1000, dropCoin, 0);
 }
 
 
 void dropObstacle(int v)
 {
-	obs++;
+	
 	
 	int lane = random(0, 2);
 	addObstacle(lane);
 	glutTimerFunc(7000, dropObstacle, 0);
+}
+
+//=======================================================================
+// Mouse Function
+//=======================================================================
+void myMouse(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT && state == GLUT_DOWN) {
+		PlaySound(NULL, 0, SND_ASYNC);
+		PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	}
 }
 
 //=======================================================================
@@ -908,6 +1135,8 @@ void main(int argc, char** argv)
 //	glutTimerFunc(0, lightAnim, 0);
 
 	glutKeyboardFunc(Keyboard);
+
+	glutMouseFunc(myMouse);
 
 	glutSpecialFunc(Special);
 
