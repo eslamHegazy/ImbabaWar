@@ -21,5 +21,7 @@ public:
 	void rotateY(float a);
 
 	void look();
+
+	//void setView(int view, int x, int z);
 };
 

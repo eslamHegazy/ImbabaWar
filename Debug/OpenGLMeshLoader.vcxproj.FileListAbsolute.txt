@@ -1,2 +1,4 @@
 E:\ImbabaWar\Debug\OpenGLMeshLoader.exe
 E:\ImbabaWar\Debug\OpenGLMeshLoader.pdb
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\Debug\OpenGLMeshLoader.exe
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\Debug\OpenGLMeshLoader.pdb
