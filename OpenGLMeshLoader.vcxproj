@@ -81,6 +81,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="glaux.dll" />
+    <None Include="glew32.dll" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -93,9 +95,38 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D:\4th semester 2nd year teaching\Graphics\Labs\new implementation\OpenGLMeshLoader\TextureBuilder.h" />
+    <ClInclude Include="glaux.h" />
+    <ClInclude Include="glew.h" />
     <ClInclude Include="GLTexture.h" />
+    <ClInclude Include="glut.h" />
     <ClInclude Include="Model_3DS.h" />
+    <ClInclude Include="TextureBuilder.h" />
     <ClInclude Include="Vector3f.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="bullet.wav" />
+    <Media Include="camera.wav" />
+    <Media Include="movecar.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gamePlay.png" />
+    <Image Include="textures\blu-sky-3.bmp" />
+    <Image Include="textures\ground (2).bmp" />
+    <Image Include="textures\ground.bmp" />
+    <Image Include="textures\ground0.bmp" />
+    <Image Include="textures\marple.bmp" />
+    <Image Include="textures\NHVWdm.bmp" />
+    <Image Include="textures\night.bmp" />
+    <Image Include="textures\night2.bmp" />
+    <Image Include="textures\sea.bmp" />
+    <Image Include="textures\surface.bmp" />
+    <Image Include="textures\wall.bmp" />
+    <Image Include="textures\wood.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="glaux.lib" />
+    <Library Include="glew32.lib" />
+    <Library Include="glut32.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
