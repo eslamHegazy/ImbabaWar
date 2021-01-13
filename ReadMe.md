@@ -1,12 +1,24 @@
-# GUC Surfers
-<img src="gamePlay.png" alt="gameplay">
+# Imbaba War
+
 
 ## Description
-GUC-Surfers is a 3d game developed using C++ and OpenGL framework. In the game, the player controlls a tank that can switch between 3 lanes. The goal is to collect as many boxes as required to go to the next level while trying to avoid the presented obstacles on these lanes. <br/> 
-The player can also switch between first and third player cameras.
+The main character/protagonist is an army tank. 
+
+### Navigation:   
+ The tank moves using the keyboard.
+ 
+### Camera: 
+First person perspective camera (shows what is in front of the tank). Selected by a mouse left-click.
+Third person perspective camera (camera is behind and above the tank to show the tank with what is around and in front of it). Selected by a mouse right-click.
+
+### Levels & Lights:
+Level 1:
+Day mode mission to reach a canal and cross it. There are obstacles in ground to hinder movement of the tank and the tank has to avoid them. The tank tries to collect coint throughout the path to the canal. The light source is the sun which is moving in the sky (to represent passing of time) while its light intensity decreases. Level 1 is finished on reaching the canal and the bridge over it.
+Level 2:
+The tank starts level 2 after crossing the canal on night. Light source is now placed on the tank and rotates (right-left) to distribute light over what is in front of the tank on right and on left. The obstacels are airbombs dropped from the sky (The tank may just avoid them or destroy them by its gun). The goal is a flag at the end of the path.
 
 ## Controls
-<ul>
-<li><b>A</b> and <b>D</b> for moving the tank left and right, respectively </li>
-<li><b>F</b> and <b>T</b> for switching between first-person and third-person cameras </li>
-</ul>
+- 'm' for moving forward
+- 'a' and 'd' for moving left and right respectively
+- 'f' for First Person View
+- 't' for Third Person View
