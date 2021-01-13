@@ -46,7 +46,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 1000;
+double PlayerForward = 980.0;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -62,7 +62,6 @@ struct Shape {
 
 	};
 };
-vector<Shape> weo;
 
 
 struct Sun {
@@ -110,6 +109,8 @@ struct Sun {
 };
 Sun sun = Sun(PlayerForward+110, 40, -80, 2);
 //Sun sun = Sun(PlayerForward+100, 40, -80, 2);
+float lamp_z, lamp_th = 0.2f;
+int lamp_dir = 1;
 
 int cameraZoom = 0;
 
@@ -191,10 +192,49 @@ void setupSun()
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30.0);
 	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 90.0);
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, l2Direction);*/
+}
 
+void setupLamp() {
+	glDisable(GL_LIGHT0);
+	//glDisable(GL_LIGHT1);
+	//glDisable(GL_LIGHT2);
+	glDisable(GL_LIGHT3);
+	glDisable(GL_LIGHT4);
+	glDisable(GL_LIGHT5);
+	glDisable(GL_LIGHT6);
+	glDisable(GL_LIGHT7);
 
+	GLfloat globAmb[] = { 0.25f, 0.25f, 0.25f };
+	glLightfv(GL_LIGHT2, GL_AMBIENT, globAmb);
 
-}void setCameraView(int view) {
+	glEnable(GL_LIGHT2);
+
+	float x = PlayerForward + 3;//1;
+	float y = 1.7f;//1.1f;
+	float z = lanes[player_lane]-0.02f;
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTranslatef(x, y, z);
+	glutSolidSphere(0.15f, 35, 35);//glutSolidSphere(0.05f, 35, 35);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+	GLfloat pos[] = { x , y, z, 1.0 };
+	GLfloat amb[] = { 0.2f, 1.0f, 0.2f };
+	//printf("lamp_Z=%.2f\n", lamp_z);
+	GLfloat dir[] = { 1.0f, -0.1f, lamp_z };
+	GLfloat cut = 40;
+	GLfloat exp = 128;
+	//GLfloat
+	glLightfv(GL_LIGHT1, GL_POSITION, pos);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, amb);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, cut);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, exp);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHTING);
+}
+void setCameraView(int view) {
 	if (view == FIRST_PERSON_VIEW) {
 		firstCam = true;
 		score_pos = -30;
@@ -224,7 +264,8 @@ void setupCamera() {
 	glLoadIdentity();
 	
 	camera.look();
-	setupSun();
+	//setupSun();
+	setupLamp();
 }
 
 // Model Variables
@@ -296,13 +337,12 @@ void RenderGround()
 	
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 
-	/*glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	GLfloat amb[] = { 1.0f,0.0f,0.0f, 0.0f };
-	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);*/
+	
 
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
-
+	
 	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -480,7 +520,7 @@ void renderObstacle(float x, float lane,int i,float y)
 		glPushMatrix();
 		/*glRotated(90, 0, 0, 1);
 		glTranslated(0, -1, 0);*/
-		glTranslated(1, 0, 0);
+		glTranslated(-1, 0, 0);
 		glRotated(90, 0, 0, 1);
 		renderFace();
 		glPopMatrix();
@@ -489,7 +529,7 @@ void renderObstacle(float x, float lane,int i,float y)
 		glPushMatrix();
 		/*glRotated(90, 0, 0, 1);
 		glTranslated(0, 1, 0);*/
-		glTranslated(-1, 0, 0);
+		glTranslated(1, 0, 0);
 		glRotated(-90, 0, 0, 1);
 		renderFace();
 		glPopMatrix();
@@ -520,10 +560,7 @@ void renderObstacle(float x, float lane,int i,float y)
 // adds an obstacle behind the skybox
 void addObstacle(int lane)
 {
-	
-		weo.push_back(Shape(PlayerForward+50, lane,PlayerForward>=1008.5?20:0));
-		obstacles.push_back(Shape(PlayerForward+50, lane, PlayerForward >= 1008.5 ? 20 : 0));
-	
+		obstacles.push_back(Shape(PlayerForward+50, lane, PlayerForward >= 1008.5 ? 20 : 0));	
 }
 
 void addCoin(int lane)
@@ -559,7 +596,6 @@ void onObstacleCollision(int max)
 		start = 10;
 		coins.clear();
 		obstacles.clear();
-		weo.clear();
 		destroyed = 0;
 		//shiftAll();
 		while (PlayerForward > 1110) {
@@ -612,6 +648,31 @@ int random(int lower, int upper)
 	return (rand() % (upper - lower + 1)) + lower;
 }
 
+void showScore() {
+	// Display Score
+	char* strScore[20];
+
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	if (player_lane == 0)
+	{
+		glTranslatef(-10 + PlayerForward, score_pos, 10);
+	}
+	else if (player_lane == 1)
+	{
+		glTranslatef(-10 + PlayerForward, score_pos, 12);
+	}
+	else {
+		glTranslatef(-10 + PlayerForward, 1.0f*score_pos, 14);
+	}
+	
+	glColor3f(1.0f, 1.0f, 1.0f);
+	sprintf((char*)strScore, "Score = %d/%d", score, maxScore);
+	print(50, 50, (char*)strScore);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+}
+
 //=======================================================================
 // Display Function
 //=======================================================================
@@ -634,31 +695,9 @@ void myDisplay(void)
 	//Display sun
 	sun.draw();
 
-	// Display Score
-	char* strScore[20];
+	//Display Score
+	showScore();
 
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	if (player_lane == 0)
-	{
-		glTranslatef(-10+PlayerForward, score_pos, 10);
-	}
-	else if (player_lane == 1)
-	{
-
-		glTranslatef(-10 + PlayerForward, score_pos, 12);
-
-	}
-	else {
-		glTranslatef(-10 + PlayerForward, score_pos, 14);
-
-	}
-	
-	glColor3f(0, 0, 0);
-	sprintf((char *)strScore, "Score = %d/%d", score, maxScore);
-	print(50, 50, (char *)strScore);
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
 	// Display Level
 
 	glPushMatrix();
@@ -681,7 +720,6 @@ void myDisplay(void)
 	glScalef(0.5, 0.5, 0.5);
 	glRotatef(-90.f, 0, 1, 0);
 	model_car.Draw();
-
 	glPopMatrix();
 
 	// bridge
@@ -830,6 +868,11 @@ void anime()
 
 	//for (int i = 0; i < 1e7; i++);
 	sun.anim();
+	if (lamp_z >= lamp_th || -1 * lamp_z >= lamp_th) {
+		lamp_dir *= -1.0f;
+	}
+	lamp_z += 0.001f* lamp_dir;
+	
 
 	glutPostRedisplay();
 }
@@ -888,22 +931,34 @@ void Keyboard(unsigned char key, int x, int y) {
 		
 		//printf("%d \n dest", destroyed);
 		int n = destroyed;
-		//printf("%f \n", weo[n].x);
-		if (player_lane < 2 && !(n < weo.size() && player_lane + 1 == weo[n].lane&&PlayerForward+4>=weo[n].x)||(player_lane > 0 && PlayerForward>1008&&PlayerForward<1110)||(player_lane > 0 && PlayerForward>1110))
+		printf("D pressed & current_lane = %d\n", player_lane);
+		if (player_lane < 2 &&
+			!(n < obstacles.size() && player_lane + 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x)
+			|| (player_lane < 2 && PlayerForward>1008 && PlayerForward < 1110)
+			|| (player_lane < 2 && PlayerForward>1110)) {
+			printf("X Case 'd' true || oldLane=%d", player_lane);
 			if (PlayerForward < 992) {
-					player_lane++;
-					camera.moveX(-x_truck_cam);
+				player_lane++;
+				camera.moveX(-x_truck_cam);
 			}
 			else if (PlayerForward >= 1008) {
 				player_lane++;
 				camera.moveX(-x_truck_cam);
 			}
+			else {
+				printf("X Case 'd' False");
+			}
+		}
 		break;
 		}
+		
 	case 'a': {
 		int n = destroyed;
 	//	printf("%f \n", obstacles[n].x);
-		if (player_lane > 0 && !(n<weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x) || ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) || (player_lane > 0 && PlayerForward > 1110))
+		if (player_lane > 0 && 
+			!(n< obstacles.size() && player_lane - 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x)
+			|| ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) 
+			|| (player_lane > 0 && PlayerForward > 1110)){
 			if (PlayerForward < 992) {
 				player_lane--;
 				camera.moveX(x_truck_cam);
@@ -911,6 +966,7 @@ void Keyboard(unsigned char key, int x, int y) {
 			else if (PlayerForward >= 1008) {
 				player_lane--;
 				camera.moveX(x_truck_cam);
+			}
 			}
 		break;
 	}
@@ -966,6 +1022,9 @@ void dropCoin(int v)
 	{
 		int lane = random(0, 2);
 		addCoin(lane);
+	}
+	else {
+		printf("DROP NOT ALLOWED");
 	}
 	glutTimerFunc(500, dropCoin, 0);
 }
