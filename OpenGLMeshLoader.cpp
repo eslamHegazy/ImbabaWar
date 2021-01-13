@@ -46,14 +46,15 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 980.0;
+double PlayerForward = 0;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
 double trans = 0;
 int idx = 0;
 struct Shape {
-	double x;
+	doubl
+		e x;
 	double y;
 	int lane;
 
@@ -62,7 +63,7 @@ struct Shape {
 
 	};
 };
-
+vector<Shape> weo;
 
 struct Sun {
 	float xc;
@@ -87,7 +88,7 @@ struct Sun {
 		glPushMatrix();
 		GLUquadricObj* qobj;
 		qobj = gluNewQuadric();
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(1.0f, 1.0f, 108.0f/255);
 		glTranslated(xc, yc, zc);
 		//printf("sun shown : %f %f %f\n", xc, yc, zc);
 		//gluQuadricNormals(qobj, GL_SMOOTH);
@@ -212,13 +213,7 @@ void setupLamp() {
 	float x = PlayerForward + 3;//1;
 	float y = 1.7f;//1.1f;
 	float z = lanes[player_lane]-0.02f;
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glTranslatef(x, y, z);
-	glutSolidSphere(0.15f, 35, 35);//glutSolidSphere(0.05f, 35, 35);
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
+	
 	GLfloat pos[] = { x , y, z, 1.0 };
 	GLfloat amb[] = { 0.2f, 1.0f, 0.2f };
 	//printf("lamp_Z=%.2f\n", lamp_z);
@@ -234,6 +229,22 @@ void setupLamp() {
 	glEnable(GL_LIGHT1);
 	glEnable(GL_LIGHTING);
 }
+
+void drawLamp() {
+	float x = PlayerForward + 3;//1;
+	float y = 1.7f;//1.1f;
+	float z = lanes[player_lane] - 0.02f;
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glColor3f(0.28f, 0.81f, 0.095f);
+	GLfloat wh[] = { 1.0f, 1.0f, 1.0f };
+	glMaterialfv(GL_FRONT, GL_AMBIENT, wh);
+	glTranslatef(x, y, z);
+	glutSolidSphere(0.05f, 35, 35); //glutSolidSphere(0.15f, 35, 35);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+}
+
 void setCameraView(int view) {
 	if (view == FIRST_PERSON_VIEW) {
 		firstCam = true;
@@ -264,8 +275,10 @@ void setupCamera() {
 	glLoadIdentity();
 	
 	camera.look();
-	//setupSun();
-	setupLamp();
+	if (PlayerForward < 1010)
+		setupSun();
+	else
+		setupLamp();
 }
 
 // Model Variables
@@ -357,6 +370,8 @@ void RenderGround()
 	glVertex3f(-20, 0, 3);
 	glEnd();
 	glPopMatrix();
+	
+	glDisable(GL_TEXTURE_2D);
 
 	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
@@ -386,6 +401,8 @@ void RenderBridge()
 	glEnd();
 	glPopMatrix();
 
+	glDisable(GL_TEXTURE_2D);
+
 	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 		// Set material back to white instead of grey used for the ground texture.
@@ -414,6 +431,8 @@ void RenderSurface()
 	glVertex3f(-200, 0, 200);
 	glEnd();
 	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
 
 	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
@@ -554,12 +573,15 @@ void renderObstacle(float x, float lane,int i,float y)
 			// Set material back to white instead of grey used for the ground texture.
 
 		glPopMatrix();
+
+		glDisable(GL_TEXTURE_2D);
 	}
 }
 
 // adds an obstacle behind the skybox
 void addObstacle(int lane)
 {
+		weo.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
 		obstacles.push_back(Shape(PlayerForward+50, lane, PlayerForward >= 1008.5 ? 20 : 0));	
 }
 
@@ -596,6 +618,7 @@ void onObstacleCollision(int max)
 		start = 10;
 		coins.clear();
 		obstacles.clear();
+		weo.clear();
 		destroyed = 0;
 		//shiftAll();
 		while (PlayerForward > 1110) {
@@ -687,7 +710,10 @@ void myDisplay(void)
 	InitMaterial();
 
 	//Display sun
-	sun.draw();
+	if (PlayerForward < 1010)
+		sun.draw();
+	else
+		drawLamp();
 
 	//Display Score
 	showScore();
@@ -747,6 +773,7 @@ void myDisplay(void)
 
 	//sky box4
 	//glDisable(GL_LIGHTING);	// Disable lighting 
+	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
 	glMaterialf(GL_FRONT_AND_BACK, GL_DIFFUSE, 1.0f);
 	GLUquadricObj * qobj;
@@ -759,6 +786,7 @@ void myDisplay(void)
 	gluSphere(qobj, 100, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 		// Set material back to white instead of grey used for the ground texture.
@@ -888,7 +916,8 @@ void Keyboard(unsigned char key, int x, int y) {
 			tex_ground.Load("Textures/wood.bmp");
 			tex_surface.Load("Textures/ground0.bmp");
 			tex_wood.Load("Textures/marple.bmp");
-			loadBMP(&tex, "Textures/night2.bmp", true);
+			loadBMP(&tex, "Textures/NHVWdm.bmp", true);
+			glDisable(GL_TEXTURE_2D);
 		}
 		printf("%f \n", PlayerForward);
 		printf("%f  dest \n ",trans);
@@ -925,9 +954,10 @@ void Keyboard(unsigned char key, int x, int y) {
 		
 		//printf("%d \n dest", destroyed);
 		int n = destroyed;
+		//printf("%f \n", weo[n].x);
 		printf("D pressed & current_lane = %d\n", player_lane);
 		if (player_lane < 2 &&
-			!(n < obstacles.size() && player_lane + 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x)
+			!(n < weo.size() && player_lane + 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x)
 			|| (player_lane < 2 && PlayerForward>1008 && PlayerForward < 1110)
 			|| (player_lane < 2 && PlayerForward>1110)) {
 			printf("X Case 'd' true || oldLane=%d", player_lane);
@@ -950,7 +980,7 @@ void Keyboard(unsigned char key, int x, int y) {
 		int n = destroyed;
 	//	printf("%f \n", obstacles[n].x);
 		if (player_lane > 0 && 
-			!(n< obstacles.size() && player_lane - 1 == obstacles[n].lane && PlayerForward + 4 >= obstacles[n].x)
+			!(n< weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x)
 			|| ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) 
 			|| (player_lane > 0 && PlayerForward > 1110)){
 			if (PlayerForward < 992) {
