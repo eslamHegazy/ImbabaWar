@@ -684,13 +684,7 @@ void myDisplay(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	setupCamera();
-	
 	InitMaterial();
-
-	/*GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
-	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);*/
 
 	//Display sun
 	sun.draw();
@@ -700,6 +694,7 @@ void myDisplay(void)
 
 	// Display Level
 
+	//Draw the big surface
 	glPushMatrix();
 	glTranslated(groundTransform * 0.2, 0, 0);
 	//glScaled(20, 1, 1);
@@ -715,7 +710,6 @@ void myDisplay(void)
 
 	// Draw Player
 	glPushMatrix();
-
 	glTranslatef(PlayerForward,PlayerForward>=993 && PlayerForward<=1009?0.8:0.5, lanes[player_lane]);
 	glScalef(0.5, 0.5, 0.5);
 	glRotatef(-90.f, 0, 1, 0);
@@ -817,8 +811,8 @@ void anime()
 		if (obstacles[i].lane == player_lane &&
 			obstacles[i].x <=PlayerForward+4 && obstacles[i].x >=PlayerForward-3)
 		{
-			printf("kolayd was here %d \n ", obstacles[i].lane );
-			printf("kolayd was here %f \n ", obstacles[i].x);
+			printf("kimo was here %d \n ", obstacles[i].lane );
+			printf("kimo was here %f \n ", obstacles[i].x);
 
 			onObstacleCollision(obstacles[i].x);
 			break;
