@@ -53,8 +53,7 @@ vector<Shape> coins;
 double trans = 0;
 int idx = 0;
 struct Shape {
-	doubl
-		e x;
+	double x;
 	double y;
 	int lane;
 
@@ -64,6 +63,7 @@ struct Shape {
 	};
 };
 vector<Shape> weo;
+
 
 struct Sun {
 	float xc;
@@ -243,26 +243,6 @@ void drawLamp() {
 	glutSolidSphere(0.05f, 35, 35); //glutSolidSphere(0.15f, 35, 35);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
-}
-
-void setCameraView(int view) {
-	if (view == FIRST_PERSON_VIEW) {
-		firstCam = true;
-		score_pos = -30;
-		if (PlayerForward >= 993 && PlayerForward <= 1009) {
-			camera = Camera(0.5f + PlayerForward, 2.3f, lanes[player_lane], 1.0f + PlayerForward, 2.3f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
-		}
-		else {
-			camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
-		}
-	}
-	else if (view == THIRD_PERSON_VIEW) {
-		firstCam = false;
-		/*score_pos = -48.5;
-		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);*/
-		score_pos = -28.5;
-		camera = Camera(-5.6f + PlayerForward, 2.77f, lanes[player_lane], 1.4f + PlayerForward, 2.84f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
-	}
 }
 
 void setupCamera() {
@@ -1002,10 +982,19 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 't':
-		setCameraView(THIRD_PERSON_VIEW);
+		firstCam = false;
+		score_pos = -48.5;
+		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 		break;
 	case 'f':
-		setCameraView(FIRST_PERSON_VIEW);
+		firstCam = true;
+		score_pos = -30;
+		if (PlayerForward >= 993 && PlayerForward <= 1009) {
+			camera = Camera(0.5f + PlayerForward, 2.3f, lanes[player_lane], 1.0f + PlayerForward, 2.3f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		}
+		else {
+			camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		}
 		break;
 	case GLUT_KEY_ESCAPE:
 		exit(EXIT_SUCCESS);

@@ -1,11 +1,11 @@
 ﻿  OpenGLMeshLoader.cpp
 E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\TextureBuilder.h(27,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
 E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\TextureBuilder.h(28,52): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(690,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(828,20): warning C4018: '<': signed/unsigned mismatch
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(862,20): warning C4018: '<': signed/unsigned mismatch
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(879,20): warning C4018: '<': signed/unsigned mismatch
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(956,8): warning C4018: '<': signed/unsigned mismatch
-E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(979,7): warning C4018: '<': signed/unsigned mismatch
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(676,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(825,20): warning C4018: '<': signed/unsigned mismatch
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(859,20): warning C4018: '<': signed/unsigned mismatch
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(876,20): warning C4018: '<': signed/unsigned mismatch
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(954,8): warning C4018: '<': signed/unsigned mismatch
+E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\OpenGLMeshLoader.cpp(977,7): warning C4018: '<': signed/unsigned mismatch
 Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
   OpenGLMeshLoader.vcxproj -> E:\University\7th Semester\DMET 502 Computer Graphics\Project\imbabawar\Debug\OpenGLMeshLoader.exe
