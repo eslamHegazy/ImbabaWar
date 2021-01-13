@@ -2,8 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="glaux.dll" />
-    <None Include="glew32.dll" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -45,34 +43,5 @@
     </ClInclude>
     <ClInclude Include="Vector3f.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="glaux.h" />
-    <ClInclude Include="glew.h" />
-    <ClInclude Include="glut.h" />
-    <ClInclude Include="TextureBuilder.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="bullet.wav" />
-    <Media Include="camera.wav" />
-    <Media Include="movecar.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="gamePlay.png" />
-    <Image Include="textures\blu-sky-3.bmp" />
-    <Image Include="textures\ground (2).bmp" />
-    <Image Include="textures\ground.bmp" />
-    <Image Include="textures\ground0.bmp" />
-    <Image Include="textures\marple.bmp" />
-    <Image Include="textures\NHVWdm.bmp" />
-    <Image Include="textures\night.bmp" />
-    <Image Include="textures\night2.bmp" />
-    <Image Include="textures\sea.bmp" />
-    <Image Include="textures\surface.bmp" />
-    <Image Include="textures\wall.bmp" />
-    <Image Include="textures\wood.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="glaux.lib" />
-    <Library Include="glew32.lib" />
-    <Library Include="glut32.lib" />
   </ItemGroup>
 </Project>
