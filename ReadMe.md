@@ -18,3 +18,7 @@ Level 2:
 The tank starts level 2 after crossing the canal on night. Light source is now placed on the tank and rotates (right-left) to distribute light over what is in front of the tank on right and on left. The obstacels are airbombs dropped from the sky (The tank may just avoid them or destroy them by its gun). The goal is a flag at the end of the path.
 
 ## Controls
+- 'm' for moving forward
+- 'a' and 'd' for moving left and right respectively
+- 'f' for First Person View
+- 't' for Third Person View
