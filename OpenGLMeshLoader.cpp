@@ -1158,7 +1158,6 @@ void Keyboard(unsigned char key, int x, int y) {
 		
 		int n = destroyed;
 	//	printf("%f \n", obstacles[n].x);
-<<<<<<< HEAD
 		if (player_lane > 0 && 
 			!(n< weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x)
 			|| ( player_lane > 0 && PlayerForward > 1008 && PlayerForward < 1110) 
