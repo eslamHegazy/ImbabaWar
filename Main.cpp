@@ -51,7 +51,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 900;
+double PlayerForward = 100;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -104,6 +104,7 @@ struct Sun {
 	}
 	void anim() {
 		float fac = 0.6f;
+		if (zc > 70) return;
 		zc += fac*0.02f;
 		if (zc > 0) {
 			yc -= fac*0.006f;
@@ -120,7 +121,8 @@ int lamp_dir = 1;
 
 int cameraZoom = 0;
 
-Camera camera = Camera(0.5f, 2.0f, 0.0f, 1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+Camera camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+//Camera camera = Camera(0.5f, 2.0f, 0.0f, 1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 //*******************************************************************************************//
 // EYE (ex, ey, ez): defines the location of the camera.									 //
 // AT (ax, ay, az):	 denotes the direction where the camera is aiming at.					 //
