@@ -9,6 +9,7 @@
 #include "Camera.h" 
 #include <time.h>       
 #include <dsound.h>
+#include <windows.h>
 
 #define GLUT_KEY_ESCAPE 27
 #define LEFT_LANE -2
@@ -1309,6 +1310,9 @@ void main(int argc, char** argv)
 
 	glShadeModel(GL_SMOOTH);
 
+
+	mciSendString("open \"back2.wav\" type mpegvideo alias wav", NULL, 0, NULL);
+	mciSendString("play wav repeat", NULL, 0, NULL);
 	glutMainLoop();
 }
 
