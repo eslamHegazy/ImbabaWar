@@ -52,10 +52,11 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 900;
+double PlayerForward = 0;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
+vector<Shape> missiles;
 double trans = 0;
 int idx = 0;
 struct Shape {
@@ -270,6 +271,7 @@ void setupCamera() {
 Model_3DS model_house;
 Model_3DS model_car;
 Model_3DS model_bomb;
+Model_3DS model_missile;
 
 Model_3DS coin_model;
 Model_3DS model_bridge;
@@ -667,6 +669,15 @@ void renderCoin(float x, float lane) {
 		// Set material back to white instead of grey used for the ground texture.
 
 }
+void renderMissle(double x,double lane) {
+	glPushMatrix();
+	glTranslatef(x, 3, lane);
+	glScaled(0.05, 0.05, 0.05);
+	glRotated(-90, 0, 1, 0);
+	model_missile.Draw();
+	glPopMatrix();
+}
+
 int counter = 1;
 int tot[100];
 void shiftAll() {
@@ -847,24 +858,6 @@ void onCoinCollision(int i)
 	virtual_score++;
 	score++;
 
-	if (virtual_score == 10) {
-		glutSwapBuffers();
-		tex_ground.Load("Textures/wood.bmp");
-		tex_surface.Load("Textures/ground0.bmp");
-		tex_wood.Load("Textures/marple.bmp");
-
-
-		score = 0;
-		maxScore = 20;
-		
-	}
-
-	else if (virtual_score == 30) {
-
-		stop = 0;
-		exit(EXIT_SUCCESS);
-
-	}
 }
 
 int random(int lower, int upper)
@@ -891,7 +884,7 @@ void showScore() {
 	}
 	
 	glColor3f(1.0f, 1.0f, 1.0f);
-	sprintf((char*)strScore, "Score = %d/%d", score, maxScore);
+	sprintf((char*)strScore, "Score = %d", score);
 	print(50, 50, (char*)strScore);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
@@ -953,6 +946,8 @@ void myDisplay(void)
 	model_bridge.Draw();
 	glPopMatrix();
 
+	//missle
+
 	//glColor3f(0, 0, 0);
 	glPushMatrix();
 	glTranslated(groundTransform, 0.3, 0);
@@ -967,7 +962,12 @@ void myDisplay(void)
 		//printf("(%d,%.1f) ",coins[i].lane,coins[i].x);
 	}
 	//printf("\n%d\n",coins.size());
-
+	if (PlayerForward >= 1070) {
+		for (unsigned i = 0; i < missiles.size(); i++)
+		{
+			renderMissle(missiles[i].x, lanes[missiles[i].lane] );
+		}
+	}
 	// Draw all obstacles
 	for (unsigned i = 0; i < obstacles.size(); i++)
 	{
@@ -1012,6 +1012,7 @@ void LoadAssets()
 	model_bridge.Load("Models/bridge/Bridge.3ds");
 	coin_model.Load("Models/coin/Coin Block2.3ds");
 	model_bomb.Load("Models/Obstacle/Bomb.3ds");
+	model_missile.Load("Models/missile/AIM120D.3ds");
 
 	// Loading texture files
 	if (score <= 2) {
@@ -1041,6 +1042,15 @@ void anime()
 		if (obstacles[i].x <= PlayerForward - 3) {
 			destroyAtIndex(i--, obstacles);
 			destroyed++;
+		}
+	}
+	for (int i = 0; i < missiles.size(); i++) {
+		missiles[i].x += 1;
+		for (int j = 0; j < obstacles.size(); j++) {
+			if (missiles[i].lane==obstacles[j].lane && abs(missiles[i].x- obstacles[j].x)<=5) {
+				destroyAtIndex(j--, obstacles);
+				destroyed++;
+			}
 		}
 	}
 	sun.anim();
@@ -1328,8 +1338,9 @@ void myMouse(int button, int state, int x, int y)
 		return;
 	}
 	if (button == GLUT_LEFT && state == GLUT_DOWN) {
-		if (PlayerForward >= 1110) {
+		if (PlayerForward >= 1070) {
 			PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			missiles.push_back(Shape(PlayerForward, player_lane, 0));
 		}
 	}
 }
