@@ -52,7 +52,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 2200;
+double PlayerForward = 0;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -68,7 +68,6 @@ struct Shape {
 
 	};
 };
-vector<Shape> weo;
 
 
 struct Sun {
@@ -775,9 +774,14 @@ void renderObstacle(float x, float lane,int i,float y)
 void addObstacle(int lane)
 {
 	if (PlayerForward + 50 < 2200 && (PlayerForward+50 < 980 || PlayerForward+50>1110)) {
-		obs++;
-		weo.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
-		obstacles.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
+		if (PlayerForward + 50 < 980) {
+		}
+		else {
+			obs++;
+			obstacles.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
+		}
+
+		
 	}
 }
 
@@ -817,7 +821,6 @@ void onObstacleCollision()
 		start = 10;
 		coins.clear();
 		obstacles.clear();
-		weo.clear();
 		destroyed = 0;
 		//shiftAll();
 		while (PlayerForward > 1110) {
@@ -826,6 +829,9 @@ void onObstacleCollision()
 			camera.center.x -= 0.5;			
 		}
 		
+	}
+	else {
+		bridgeOpen.Play();
 	}
 	
 }
@@ -1056,30 +1062,22 @@ void anime()
 
 
 
-bool checkCollisions() {
+bool checkCollisions(int checkLane) {
 	bool collision = false;
 	for (int i = 0; i < obstacles.size(); i++)
 	{
 		// If player collided with obstacle
-		if (obstacles[i].lane == player_lane &&
+		if (obstacles[i].lane == checkLane &&
 			obstacles[i].x <= PlayerForward + 4 && obstacles[i].x >= PlayerForward - 3)
 		{
 			printf("kimo was here %d \n ", obstacles[i].lane);
 			printf("kimo was here %f \n ", obstacles[i].x);
 
 			onObstacleCollision();
-			if(PlayerForward > 1110)
-				collision = true;
+			//if(PlayerForward > 1110)
+			collision = true;
 			break;
 		}
-		else if (obstacles[i].lane != player_lane &&
-			obstacles[i].x <= PlayerForward + 4 && obstacles[i].x >= 0) {
-
-
-		}
-
-
-
 		// If the obstacle is way behind the player
 	}
 
@@ -1090,7 +1088,7 @@ bool checkCollisions() {
 		//	coins[i].x -= 1 * stop;
 
 			// If player collided with coin
-		if (coins[i].lane == player_lane &&
+		if (coins[i].lane == checkLane &&
 			coins[i].x <= PlayerForward && coins[i].x >= PlayerForward - 7)
 		{
 			//printf("%f \n", coins[i].x);
@@ -1124,23 +1122,27 @@ void Keyboard(unsigned char key, int x, int y) {
 		printf("%f \n", PlayerForward);
 		printf("%f  dest \n ",trans);
 		bool canMove;
-		canMove = !checkCollisions();
-		if (canMove && (PlayerForward < 991.5 || PlayerForward>=1008||(PlayerForward>=1008&&PlayerForward<1110))) {
-			Beep(623, 2);
-			PlayerForward += 0.5;	
-			sun.xc += 0.5f;
-			camera.eye.x += 0.5;
-			camera.center.x += 0.5;
-			trans+=0.2;
-		}
-		else if (canMove && player_lane == 1) {
-			PlayerForward += 0.5;	sun.xc += 0.5f;
-			camera.eye.x += 0.5;
-			camera.center.x += 0.5;
-			trans+=0.2;
+		canMove = !checkCollisions(player_lane);
+		if (!canMove) {
+
 		}
 		else {
-			bridgeOpen.Play();
+			if ((PlayerForward < 991.5 || PlayerForward >= 1008 || (PlayerForward >= 1008 && PlayerForward < 1110))) {
+				Beep(623, 2);
+				PlayerForward += 0.5;
+				sun.xc += 0.5f;
+				camera.eye.x += 0.5;
+				camera.center.x += 0.5;
+				trans += 0.2;
+			}
+			else if (player_lane == 1) {
+				Beep(623, 2);
+				PlayerForward += 0.5;	
+				sun.xc += 0.5f;
+				camera.eye.x += 0.5;
+				camera.center.x += 0.5;
+				trans += 0.2;
+			}
 		}
 		if (PlayerForward >= 993 && PlayerForward <= 1009) {
 			if (firstCam) {
@@ -1188,8 +1190,9 @@ void Keyboard(unsigned char key, int x, int y) {
 			bridgeOpen.Play();
 		}
 		else {
-			if ((n < weo.size() && player_lane + 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x)) {//collision
-				onObstacleCollision();
+			bool canMove;
+			canMove = !checkCollisions(player_lane+1);
+			if (!canMove) {//collision
 			}
 			else {
 				if (PlayerForward > 1008 && PlayerForward < 1110) {//cannot change lane in bridge
@@ -1213,8 +1216,9 @@ void Keyboard(unsigned char key, int x, int y) {
 			bridgeOpen.Play();
 		}
 		else {
-			if ((n < weo.size() && player_lane - 1 == weo[n].lane && PlayerForward + 4 >= weo[n].x)) {//collision
-				onObstacleCollision();
+			bool canMove;
+			canMove = !checkCollisions(player_lane-1);
+			if (!canMove) {//collision
 			}
 			else {
 				if (PlayerForward > 1008 && PlayerForward < 1110) {//cannot change lane in bridge
@@ -1324,7 +1328,9 @@ void myMouse(int button, int state, int x, int y)
 		return;
 	}
 	if (button == GLUT_LEFT && state == GLUT_DOWN) {
-		PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		if (PlayerForward >= 1110) {
+			PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
 	}
 }
 
@@ -1333,6 +1339,12 @@ void myMouse(int button, int state, int x, int y)
 //=======================================================================
 void main(int argc, char** argv)
 {
+	while ((obs+1) * RESPAWN_POSITION < 980) {
+		int lane = random(0, 2);
+		obs++;
+		obstacles.push_back(Shape((obs) * RESPAWN_POSITION, lane, PlayerForward >= 1008.5 ? 20 : 0));
+	}
+
 	glutInit(&argc, argv);
 	
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
