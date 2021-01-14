@@ -25,6 +25,8 @@
 
 using namespace std;
 
+bool gameFinished = false;
+
 int lanes[3] = { LEFT_LANE,CENTER_LANE,RIGHT_LANE };
 int start = 0;
 int obs = 0;
@@ -50,7 +52,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 900;
+double PlayerForward = 2200;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -275,6 +277,7 @@ Model_3DS model_bridge;
 // Textures
 GLTexture tex_ground;
 GLTexture tex_bridge;
+GLTexture tex_endflag;
 
 GLTexture tex_surface;
 GLTexture tex_wood;
@@ -567,6 +570,36 @@ void RenderBridge()
 
 		// Set material back to white instead of grey used for the ground texture.
 }
+void RenderEndflag()
+{
+	//glDisable(GL_LIGHTING);	// Disable lighting 
+
+	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
+
+	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
+
+	glBindTexture(GL_TEXTURE_2D, tex_endflag.texture[0]);	// Bind the ground texture
+
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	glNormal3f(0, 1, 0);	// Set quad normal direction.
+	glTexCoord2f(1, 0);
+	glVertex3f(2222, 0, -3);
+	glTexCoord2f(1, 1);
+	glVertex3f(2222, 10, -3);
+	glTexCoord2f(0, 1);
+	glVertex3f(2222, 10, 3);
+	glTexCoord2f(0, 0);
+	glVertex3f(2222, 0, 3);
+	glEnd();
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+
+		// Set material back to white instead of grey used for the ground texture.
+}
 
 void RenderSurface()
 {
@@ -741,7 +774,7 @@ void renderObstacle(float x, float lane,int i,float y)
 // adds an obstacle behind the skybox
 void addObstacle(int lane)
 {
-	if (PlayerForward+50 < 980 || PlayerForward+50>1110) {
+	if (PlayerForward + 50 < 2200 && (PlayerForward+50 < 980 || PlayerForward+50>1110)) {
 		obs++;
 		weo.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
 		obstacles.push_back(Shape(PlayerForward + 50, lane, PlayerForward >= 1008.5 ? 20 : 0));
@@ -751,7 +784,7 @@ void addObstacle(int lane)
 void addCoin(int lane)
 {
 	start++;
-	if (RESPAWN_POSITION * start < 980<=4000 && (RESPAWN_POSITION * start < 980 || RESPAWN_POSITION * start>1110)) {
+	if (RESPAWN_POSITION * start < 2200 && (RESPAWN_POSITION * start < 980 || RESPAWN_POSITION * start>1110)) {
 		coins.push_back(Shape(RESPAWN_POSITION * start, lane, 0));
 	}
 }
@@ -958,7 +991,7 @@ void myDisplay(void)
 
 	//glutSwapBuffers();
 
-
+	RenderEndflag();
 
 	glFlush();
 }
@@ -980,6 +1013,7 @@ void LoadAssets()
 	}
 	tex_surface.Load("Textures/surface.bmp");
 	tex_bridge.Load("Textures/sea.bmp");
+	tex_endflag.Load("Textures/endflag.bmp");
 
 	tex_wood.Load("Textures/wall.bmp");
 
@@ -1075,6 +1109,13 @@ bool checkCollisions() {
 
 
 void Keyboard(unsigned char key, int x, int y) {
+	if (key==GLUT_KEY_ESCAPE) {
+		exit(EXIT_SUCCESS);
+	}
+	if (gameFinished) {
+		return;
+	}
+
 	float d = 0.8;
 	float x_truck_cam = 2;
 
@@ -1108,6 +1149,13 @@ void Keyboard(unsigned char key, int x, int y) {
 			else {
 				camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 			}
+		}
+		if (PlayerForward >= 2220) {
+			gameFinish.Play();
+			gameFinish.Play();
+			gameFinish.Play();
+			gameFinished = true;
+			return;
 		}
     	if (PlayerForward == 1009) {
 			if (firstCam) {
@@ -1213,6 +1261,9 @@ void Keyboard(unsigned char key, int x, int y) {
 }
 
 void Special(int key, int x, int y) {
+	if (gameFinished) {
+		return;
+	}
 	float a = 1.0;
 
 	switch (key) {
@@ -1238,6 +1289,9 @@ void Special(int key, int x, int y) {
 }
 void dropCoin(int v)
 {
+	if (gameFinished) {
+		return;
+	}
 	boolean dropAllowed = random(0, 100) < 100;
 	
 	if (dropAllowed)
@@ -1251,7 +1305,9 @@ void dropCoin(int v)
 
 void dropObstacle(int v)
 {
-	
+	if (gameFinished) {
+		return;
+	}
 	
 	int lane = random(0, 2);
 	addObstacle(lane);
@@ -1264,6 +1320,9 @@ void dropObstacle(int v)
 //=======================================================================
 void myMouse(int button, int state, int x, int y)
 {
+	if (gameFinished) {
+		return;
+	}
 	if (button == GLUT_LEFT && state == GLUT_DOWN) {
 		PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
