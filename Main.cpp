@@ -52,7 +52,7 @@ int virtual_score = 0;
 int maxScore = 10;
 int score_pos = -30;
 int stop = 1;
-double PlayerForward = 0;
+double PlayerForward = 900;
 bool firstCam = true;
 vector<Shape> obstacles;
 vector<Shape> coins;
@@ -1195,7 +1195,7 @@ void Keyboard(unsigned char key, int x, int y) {
 			if (!canMove) {//collision
 			}
 			else {
-				if (PlayerForward > 1008 && PlayerForward < 1110) {//cannot change lane in bridge
+				if (PlayerForward >= 993 && PlayerForward <= 1009) {//cannot change lane in bridge
 					bridgeOpen.Play();
 				}
 				else {
@@ -1221,7 +1221,7 @@ void Keyboard(unsigned char key, int x, int y) {
 			if (!canMove) {//collision
 			}
 			else {
-				if (PlayerForward > 1008 && PlayerForward < 1110) {//cannot change lane in bridge
+				if (PlayerForward >= 993 && PlayerForward <= 1009) {//cannot change lane in bridge
 					bridgeOpen.Play();
 				}
 				else {
