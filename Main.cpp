@@ -1339,6 +1339,7 @@ void myMouse(int button, int state, int x, int y)
 //=======================================================================
 void main(int argc, char** argv)
 {
+	srand(time(NULL));
 	while ((obs+1) * RESPAWN_POSITION < 980) {
 		int lane = random(0, 2);
 		obs++;
@@ -1352,7 +1353,6 @@ void main(int argc, char** argv)
 	glutInitWindowSize(WIDTH, HEIGHT);
 
 	glutInitWindowPosition(100, 150);
-	srand(time(NULL));
 
 	glutCreateWindow(title);
 	
