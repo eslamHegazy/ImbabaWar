@@ -49,8 +49,10 @@ int light = 0;
 int player_lane = 1;
 int score = 0;
 int virtual_score = 0;
-int maxScore = 10;
+int scoret = 0;
+int virtual_scoret = 0;
 int score_pos = -30;
+int score_post = -30;
 int stop = 1;
 double PlayerForward = 0;
 bool firstCam = true;
@@ -824,6 +826,7 @@ void onObstacleCollision()
 	if (PlayerForward > 1110) {
 		PlaySound(TEXT("lost.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		score = 0;
+		scoret = 0;
 		printf("%d obs: \n", obs);
 		//counter = 0;
 		trans=222.5*2;
@@ -868,6 +871,7 @@ int random(int lower, int upper)
 void showScore() {
 	// Display Score
 	char* strScore[20];
+	char* strScoret[20];
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -885,7 +889,9 @@ void showScore() {
 	
 	glColor3f(1.0f, 1.0f, 1.0f);
 	sprintf((char*)strScore, "Score = %d", score);
+	sprintf((char*)strScoret, "Time = %d", scoret);
 	print(50, 50, (char*)strScore);
+	print(50, 48, (char*)strScoret);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 }
@@ -1362,6 +1368,11 @@ void myMouse(int button, int state, int x, int y)
 	}
 }
 
+void curTime(int v) {
+	scoret++;
+	glutTimerFunc(1000, curTime, 0);
+}
+
 //=======================================================================
 // Main Function
 //=======================================================================
@@ -1389,6 +1400,7 @@ void main(int argc, char** argv)
 	glutIdleFunc(anime);
 	glutTimerFunc(0, dropObstacle, 0);
 	glutTimerFunc(0, dropCoin, 0);
+	glutTimerFunc(1000, curTime, 0);
 //	glutTimerFunc(0, lightAnim, 0);
 
 	glutKeyboardFunc(Keyboard);
