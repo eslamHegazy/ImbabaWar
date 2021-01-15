@@ -1185,6 +1185,12 @@ void Keyboard(unsigned char key, int x, int y) {
 			glDisable(GL_TEXTURE_2D);
 		}
 		break;
+	case ' ':
+		if (PlayerForward >= 1070) {
+			PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			missiles.push_back(Shape(PlayerForward, player_lane, 0));
+		}
+		break;
 	case 'w':
 		camera.moveY(d);
 		break;
@@ -1338,10 +1344,21 @@ void myMouse(int button, int state, int x, int y)
 		return;
 	}
 	if (button == GLUT_LEFT && state == GLUT_DOWN) {
-		if (PlayerForward >= 1070) {
-			PlaySound(TEXT("bullet.wav"), NULL, SND_FILENAME | SND_ASYNC);
-			missiles.push_back(Shape(PlayerForward, player_lane, 0));
+		PlaySound(TEXT("camera.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		firstCam = true;
+		score_pos = -30;
+		if (PlayerForward >= 993 && PlayerForward <= 1009) {
+			camera = Camera(0.5f + PlayerForward, 2.3f, lanes[player_lane], 1.0f + PlayerForward, 2.3f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
 		}
+		else {
+			camera = Camera(0.5f + PlayerForward, 2.0f, lanes[player_lane], 1.0f + PlayerForward, 2.0f, lanes[player_lane], 0.0f, 1.0f, 0.0f);;
+		}
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		PlaySound(TEXT("camera.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		firstCam = false;
+		score_pos = -48.5;
+		camera = Camera(-8.0f + PlayerForward, 7.0f, lanes[player_lane], -1.0f + PlayerForward, 2.7f, lanes[player_lane], 0.0f, 1.0f, 0.0f);
 	}
 }
 
